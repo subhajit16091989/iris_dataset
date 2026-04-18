@@ -44,6 +44,7 @@ def main():
     train_cfg = load_yaml(args.config)
     data_cfg = load_yaml(train_cfg["paths"]["data_config"])
     feature_cfg = load_yaml(train_cfg["paths"]["feature_config"])
+    model_cfg = load_yaml(train_cfg["paths"]["model_config"])
     set_seed(train_cfg["seed"])
     # Split and Train the model
     X, y = load_data(data_cfg["dataset_path"])
@@ -66,6 +67,42 @@ def main():
     with open(metrics_path, "w") as f:
         json.dump(metrics, f, indent=4)
 
+    # Predict on the test set and save predictions
+    pred_df = X_test.copy()
+    pred_df["y_true"] = y_test.values
+    pred_df["y_pred"] = y_pred
+    if y_prob is not None:
+        pred_df["y_score"] = y_prob
+    predictions_path = output_dir / train_cfg["artifacts"]["predictions_file"]
+    pred_df.to_csv(predictions_path, index=False)
+    logging.info(f"Predictions saved to {predictions_path}")
+
+    holdout = X_test.copy()
+    holdout["target"] = y_test.values
+    holdout_path = output_dir / train_cfg["artifacts"]["holdout_file"]
+    holdout.to_csv(holdout_path, index=False)
+    logging.info(f"Holdout set saved to {holdout_path}")
+
+    # Summarize results
+    summary_path = Path(train_cfg["paths"]["runs_dir"]) / "summary.csv"
+    summary_row = {
+        "run_name": train_cfg["run_name"],
+        "model": model_cfg.get("model_type", "unknown"),
+        "accuracy": metrics.get("accuracy", ""),
+        "f1": metrics.get("f1", ""),
+        "roc_auc": metrics.get("roc_auc", ""),
+        "notes": "baseline run",
+    }
+    # Append instead of overwrite to keep a lightweight experiment ledger.
+    if summary_path.exists():
+        summary_df = pd.read_csv(summary_path)
+        summary_df = pd.concat([summary_df, pd.DataFrame([summary_row])], ignore_index=True)
+    else:
+        summary_df = pd.DataFrame([summary_row])
+    summary_df.to_csv(summary_path, index=False)
+
+    print(f"Saved run artifacts to: {output_dir}")
+    print(f"Metrics: {metrics}")
     
 if __name__ == "__main__":
     main()
