@@ -1,4 +1,5 @@
 dataset_path: data/raw/iris_dataset.csv
 test_size: 0.2
 random_state: 42
-output_dir: artefacts
+output_dir: runs
+test_data_path : runs/run_003/holdout_predictions.csv

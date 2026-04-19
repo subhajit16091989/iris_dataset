@@ -1,0 +1,7 @@
+paths:
+  data_config: configs/data/default.yaml
+  feature_config: configs/features/default.yaml
+  model_config: configs/model/default.yaml
+  train_config: configs/train/default.yaml
+inference_data_path: data/raw/iris_dataset.csv
+run_name: run_003

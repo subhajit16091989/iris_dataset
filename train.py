@@ -84,7 +84,7 @@ def main():
     logging.info(f"Holdout set saved to {holdout_path}")
 
     # Summarize results
-    summary_path = Path(train_cfg["paths"]["runs_dir"]) / "summary.csv"
+    summary_path = Path(train_cfg["paths"]["runs_dir"]) / train_cfg["run_name"] / "summary.csv"
     summary_row = {
         "run_name": train_cfg["run_name"],
         "model": model_cfg.get("model_type", "unknown"),
