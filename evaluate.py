@@ -50,7 +50,7 @@ def main():
     X_test, y_test = load_test_data(data_cfg["test_data_path"])
     # Make predictions and evaluate
     y_pred = model.predict(X_test)
-    y_prob = model.predict_proba(X_test)[:, 1] if hasattr(model, "predict_proba") else None
+    y_prob = model.predict_proba(X_test)
     metrics = classification_metrics(y_test, y_pred, y_prob)
     logging.info(f"Evaluation metrics: {metrics}")
     #Output metrics to a JSON file

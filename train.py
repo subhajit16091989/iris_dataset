@@ -25,7 +25,8 @@ def _bootstrap_dataframe(path: str) -> pd.DataFrame:
     df = pd.read_csv(path)
     if "target" in df.columns and "target_name" in df.columns:
         df = df.drop(columns=["target_name"])
-    df = df[df["target"].isin([0, 1])].reset_index(drop=True)
+    #This is useful for binary classification but we need multiclasses for this iris dataset. 
+    #df = df[df["target"].isin([0, 1])].reset_index(drop=True)
     return df
     
 def load_data(path: str) -> tuple[pd.DataFrame, pd.Series]:
@@ -61,7 +62,8 @@ def main():
 
     # Evaluate the model
     y_pred = model.predict(X_test)
-    y_prob = model.predict_proba(X_test)[:, 1]
+    #y_prob = model.predict_proba(X_test)[:, 1]
+    y_prob = model.predict_proba(X_test)
     metrics = classification_metrics(y_test, y_pred, y_prob)
     metrics_path = output_dir / train_cfg["artifacts"]["metrics_file"]
     with open(metrics_path, "w") as f:
@@ -72,7 +74,11 @@ def main():
     pred_df["y_true"] = y_test.values
     pred_df["y_pred"] = y_pred
     if y_prob is not None:
-        pred_df["y_score"] = y_prob
+        if y_prob.ndim == 1:
+            pred_df["y_score"] = y_prob
+        else:
+            for i in range(y_prob.shape[1]):
+                pred_df[f"y_score_class_{i}"] = y_prob[:, i]
     predictions_path = output_dir / train_cfg["artifacts"]["predictions_file"]
     pred_df.to_csv(predictions_path, index=False)
     logging.info(f"Predictions saved to {predictions_path}")

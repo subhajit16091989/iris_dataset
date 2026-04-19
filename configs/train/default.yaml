@@ -1,4 +1,4 @@
-run_name: run_003
+run_name: run_004
 seed: 42
 paths:
   data_config: configs/data/default.yaml
