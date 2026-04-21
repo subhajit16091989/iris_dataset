@@ -1,4 +1,5 @@
 from __future__ import annotations
+from email import parser
 from pathlib import Path
 import pandas as pd
 from sklearn.model_selection import train_test_split
@@ -38,7 +39,9 @@ def load_data(path: str) -> tuple[pd.DataFrame, pd.Series]:
 
 def main():
     parser = argparse.ArgumentParser(description="Train a logistic regression model on a binary classification dataset.")
-    parser.add_argument("config", default="configs/train/default.yaml", help="Path to the training configuration YAML file.")
+    #parser.add_argument("config", default="configs/train/default.yaml", help="Path to the training configuration YAML file.")
+    parser.add_argument("--config", default="configs/train/default.yaml", help="Path to config")
+    parser.add_argument("--output_dir", required=True, help="Output directory")
     args = parser.parse_args()
     logging.basicConfig(level=logging.INFO)
     # Load configuration from YAML file
@@ -54,7 +57,8 @@ def main():
     )
     model = train_logistic_regression(X_train, y_train, model_params={"C": 1.0}, scale_nummeric=True)
     # Save the model
-    output_dir = Path(train_cfg["paths"]["runs_dir"])/train_cfg["run_name"]
+    #output_path = Path(args.output_dir)
+    output_dir = Path(args.output_dir)
     output_dir.mkdir(exist_ok=True)
     model_path = output_dir / train_cfg["artifacts"]["model_file"]
     joblib.dump(model, model_path)

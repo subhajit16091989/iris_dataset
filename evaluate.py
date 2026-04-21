@@ -37,7 +37,8 @@ def load_test_data(test_data_path: str) -> tuple[pd.DataFrame, pd.Series]:
 
 def main():
     parser = argparse.ArgumentParser(description="Evaluate a trained model on a test dataset.")
-    parser.add_argument("config", default="configs/evaluate/default.yaml", help="Path to the evaluation configuration YAML file.")
+    parser.add_argument("--config", default="configs/evaluate/default.yaml", help="Path to the evaluation configuration YAML file.")
+    parser.add_argument("--output_dir", required=True, help="Output directory")
     args = parser.parse_args()
     logging.basicConfig(level=logging.INFO)
     # Load configuration from YAML file
@@ -54,7 +55,8 @@ def main():
     metrics = classification_metrics(y_test, y_pred, y_prob)
     logging.info(f"Evaluation metrics: {metrics}")
     #Output metrics to a JSON file
-    output_dir = Path(data_cfg["output_dir"])/ train_cfg["run_name"]
+    #output_dir = Path(data_cfg["output_dir"])/ train_cfg["run_name"]
+    output_dir = Path(args.output_dir)
     output_dir.mkdir(exist_ok=True)
     metrics_path = output_dir / "evaluation_metrics.json"
     with open(metrics_path, "w") as f:

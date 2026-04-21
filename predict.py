@@ -8,7 +8,8 @@ from pathlib import Path
 
 def main():
     parser = argparse.ArgumentParser(description="Run inference using a trained model on new data.")
-    parser.add_argument("config", default="configs/inference/default.yaml", help="Path to the inference configuration YAML file.")
+    parser.add_argument("--config", default="configs/inference/default.yaml", help="Path to the inference configuration YAML file.")
+    parser.add_argument("--output_dir", required=True, help="Output directory")
     args = parser.parse_args()
     inference_cfg = load_yaml(args.config)
     data_cfg = load_yaml(inference_cfg["paths"]["data_config"])
@@ -22,7 +23,7 @@ def main():
     predictions = predict(args.config)
     print(predictions)
     # Output predictions to a CSV file
-    output_dir = Path(data_cfg["output_dir"])/ inference_cfg["run_name"]
+    output_dir = Path(args.output_dir)
     output_dir.mkdir(exist_ok=True)
     predictions_path = output_dir / "predictions_inference.csv"
     inference_data["predictions"] = predictions
