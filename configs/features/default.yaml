@@ -1,0 +1,2 @@
+pca_enable: true
+pca_n_components: 0.95

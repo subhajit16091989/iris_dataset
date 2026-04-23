@@ -55,7 +55,7 @@ def main():
     X_train, X_test, y_train, y_test = train_test_split(
         X, y, test_size=data_cfg["test_size"], random_state=data_cfg["random_state"], stratify=y
     )
-    model = train_logistic_regression(X_train, y_train, model_params={"C": 1.0}, scale_nummeric=True)
+    model = train_logistic_regression(X_train, y_train, model_params={"C": 1.0}, scale_nummeric=True, pca_enable=feature_cfg["pca_enable"], pca_n_components=feature_cfg["pca_n_components"])
     # Save the model
     #output_path = Path(args.output_dir)
     output_dir = Path(args.output_dir)
